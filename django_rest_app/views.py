@@ -8,7 +8,16 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 
 
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
+
+
+
 # Create your views here.
+
 @csrf_exempt
 def snippet_list(request):
     if request.method == 'GET':
@@ -50,6 +59,54 @@ def snippet_details(request, pk):
     elif request.method == 'DELETE':
         snippet.delete()
         return HttpResponse(status=204)
+
+
+
+
+@api_view(['GET', 'POST'])
+def snippet_list_decorate(request):
+    if request.method == 'GET':
+        snippets = Snippet.objects.all()
+        serialiser = SnippetSerializer(snippets, many=True)
+        return Response(serialiser.data)
+    
+    elif request.method == "POST":
+        serialiser = SnippetSerializer(data=request.data)
+        if serialiser.is_valid():
+            serialiser.save()
+            return Response(serialiser.data, status = status.HTTP_201_CREATED)
+        return Response(serialiser.errors, status = status.HTTP_401_UNAUTHORIZED)
+
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def snippet_details_decorate(request, pk):
+    try:
+        snippet = Snippet.objects.get(pk=pk)
+    except Snippet.DoesNotExist:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    if request.method == 'GET':
+        serializer = SnippetSerializer(snippet)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+    
+    elif request.method == 'PUT':
+        serializer = SnippetSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        return Response(serializer.errors, status = status.HTTP_401_UNAUTHORIZED)
+    
+    elif request.method == 'DELETE':
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
 
 
 
