@@ -20,4 +20,5 @@ from rest_framework import parsers
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('function/',include('django_rest_app.urls')),
+    path('classbased/',include('class_based_view.urls')),
 ]

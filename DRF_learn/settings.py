@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Startapp
     'django_rest_app',
+    'class_based_view',
 
     #install package or libraries
     'rest_framework',
