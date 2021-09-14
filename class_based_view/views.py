@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 from django.shortcuts import render
 from class_based_view import serializer
+=======
+from django.shortcuts import redirect, render
+>>>>>>> 986bb8570a7bcde1799f88bf076d26e481ae615e
 
 # Create your views here.
 
@@ -15,6 +19,11 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import serializers, status
 
+from rest_framework.renderers import TemplateHTMLRenderer
+
+
+
+"""
 class SnippetList(APIView):
     def get(self, request, format=None):
         snippets = Snippet.objects.all()
@@ -53,6 +62,7 @@ class SnippetDetail(APIView):
         snippet = self.get_objects(pk)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+<<<<<<< HEAD
 
 
 
@@ -200,3 +210,69 @@ user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
 
 
+=======
+        
+"""
+
+
+
+# Templates Data Sending
+
+class SnippetList(APIView):
+
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'snippet_list.html'
+
+    def get(self, request, format=None):
+        snippets = Snippet.objects.all()
+        context = {
+            'snippets': snippets
+        }
+        return Response(context)
+    
+    def post(self, request, format=None):
+        serializers = SnippetSerializer(data = request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SnippetDetail(APIView):
+
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'snippet_detail.html'
+
+    def get_objects(self, pk):
+        try:
+            return Snippet.objects.get(pk=pk)
+        except Snippet.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format = None):
+        snippet = self.get_objects(pk)
+        serializers = SnippetSerializer(snippet)
+        context = {
+            'serializer': serializers, 
+            'snippet': snippet
+            }
+        return Response(context)
+
+    def put(self,request, pk, format = None):
+        snippet = self.get_objects(pk)
+        serializers = SnippetSerializer(snippet, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return redirect('snippet-list')
+
+        context = {
+            'serializer': serializers, 
+            'snippet': snippet
+            }
+        return Response(context)
+
+    def delete(self,request, pk, format = None):
+        snippet = self.get_objects(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+>>>>>>> 986bb8570a7bcde1799f88bf076d26e481ae615e

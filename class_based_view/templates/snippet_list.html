@@ -1,0 +1,11 @@
+<html><body>
+    <h1>Profiles</h1>
+    <ul>
+        {% for snippet in snippets %}
+        <li>{{ snippet.title }}</li>
+        <li>{{ snippet.language }}</li>
+        <li>{{ snippet.code }}</li>
+        <hr/>
+        {% endfor %}
+    </ul>
+    </body></html>
